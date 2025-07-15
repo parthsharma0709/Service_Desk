@@ -14,7 +14,7 @@ const userSchema= new mongoose.Schema({
         unique:true,
         trim:true
     },
-    passowrd :{
+    password :{
         type:String,
         required: true,
         unique:true,
@@ -33,13 +33,13 @@ const userSchema= new mongoose.Schema({
 });
 
 const ticketSchema= new mongoose.Schema({
-    ticketId:ObjectId,
-    userId:ObjectId,
+    userId: mongoose.Schema.Types.ObjectId,
     title:{
         type: String
         , required: true
     },
-    description: { String
+    description: { 
+        type: String
         , required : true
     },
     category : {
@@ -48,19 +48,15 @@ const ticketSchema= new mongoose.Schema({
     },
     priority:{
         type:String,
-        enum:['Low','Medium','High'],
-        default :'Medium'
+        enum:['low','medium','high'],
+        default :'medium'
     },
     status : {
         type : String,
-        enum : ['Open','In Progress','Resolved','Closed'],
-        default:'Open',
+        enum : ['open','in progress','resolved','closed'],
+        default:'open',
     },
-    // admin will confirm this is the ticket is resolved or not
-    resolution :{
-        type: String,
-        required: true
-    },
+  
     createdAt :{
              type : Date,
              default:Date.now
