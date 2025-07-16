@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const {z}= require('zod');
 const {userModel, ticketModel}= require('./database')
@@ -7,11 +8,9 @@ const bcrypt= require("bcrypt");
 const mongoose =require("mongoose");
 const jwt= require("jsonwebtoken");
 const userAuthentication= require("./auth/authorization")
-const JWT_SECRET= "parthSharma";
-
 app.use(express.json());
 
-mongoose.connect("mongodb+srv://05sharmaparth:wo169YrK6CdxJN33@cluster0.99okb.mongodb.net/Service-Desk")
+mongoose.connect(process.env.MONGODB_URL)
 .then(()=>{console.log("mongodb connected")})
 .catch((e)=>console.error("database connection error" , e))
 
@@ -117,7 +116,7 @@ app.post('/api/signin',async(req, res)=>{
         return ;
       }
 
-    const token=jwt.sign({userId:user._id},JWT_SECRET);
+    const token=jwt.sign({userId:user._id},process.env.JWT_SECRET);
     
     res.status(200).json({
         message:"signed in successfully",
@@ -137,7 +136,9 @@ app.post('/api/auth/createTicket', userAuthentication,async (req,res)=>{
         return ;
     }
     const {title,description,category,priority,status}=validateTicket.data;
-    const existingTicket= await ticketModel.findOne({description:description});
+    const existingTicket= await ticketModel.findOne({
+        description:description,
+        title : title});
     if(existingTicket){
         res.json({
             message:"same ticket already exist,please create a new ticket"
@@ -206,10 +207,73 @@ app.get('/api/auth/getTicket',userAuthentication,async (req,res)=>{
     })
 })
 
-app.put('/api/auth/updateTicket/:id',userAuthentication,async (req,res)=>{
+app.put('/api/auth/updateTicket',userAuthentication,async (req,res)=>{
      const userId= req.userId;
+     const filter = req.query.filter || '';
+     
+      const existingTicket= await ticketModel.find({
+        userId:userId,
+        title :{'$regex':filter, '$options': 'i'},   
+    });
+    
+    if(!existingTicket){
+        res.status(404).json({
+            message:"no ticket to update"
+        });
+        return ;
+    }
+    const newTicketValidate= updatedticketSchema.safeParse(req.body);
+    if(!newTicketValidate.success){
+        res.status(400).json({
+            message:"please enter valid credintials to update your ticket",
+            errors:newTicketValidate.error.errors
+        })
+        return ;
+    }
+    const updatedTicket=await ticketModel.findOneAndUpdate({
 
+    title: { $regex: filter, $options: 'i' }, 
+    userId: userId 
+  },
+        {
+             $set :{
+        userId:userId,
+        title:newTicketValidate.data.title,
+        description :newTicketValidate.data.description,
+        category : newTicketValidate.data.category,
+        priority : newTicketValidate.data.priority,
+        status:newTicketValidate.data.status
+         }
+        },
+        // be default it returns the data before updation now passing {new : true} it will return the updated decoument 
+         { new: true } 
+    )
+    res.json({
+        message:"ticket updated successfully",
+        updatedTicket:updatedTicket
+    })
 
+})
+
+app.delete('/api/auth/deleteTicket/:id',userAuthentication, async(req,res)=>{
+ const id=req.params.id;
+
+     const deletedTicket = await ticketModel.findOneAndDelete({
+     _id: req.params.id,      
+        userId: req.userId       
+});
+
+if(!deletedTicket){
+    res.json({
+        message:"ticket has already deleted"
+    })
+    return;
+}
+
+      res.json({
+        message:"ticket deleted successfully",
+        deleted:deletedTicket
+      })
 })
 
 app.listen(PORT, () => {
