@@ -26,6 +26,12 @@ const userSchema= new mongoose.Schema({
         enum :['user','admin'],
         default:'user',
     },
+     intendedFor :{
+        type:String,
+        enum :['low','medium','high'],
+        default:null
+      }, 
+
      createdAt: { 
         type: Date, 
         default: Date.now 
@@ -56,11 +62,22 @@ const ticketSchema= new mongoose.Schema({
         enum : ['open','in progress','resolved','closed'],
         default:'open',
     },
-  
+     
     createdAt :{
              type : Date,
              default:Date.now
-    }
+    },
+    comments: [
+  {
+    text: String,
+    author: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    commentedBy: { type: String, enum: ['user', 'admin'], required: true },
+    createdAt: { type: Date, default: Date.now }
+  }
+]
 })
 
 const userModel= mongoose.model("user",userSchema);
