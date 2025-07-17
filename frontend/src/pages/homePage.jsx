@@ -34,28 +34,14 @@ const HomePage = () => {
         <div className='bg-white bg-opacity-90 backdrop-blur shadow-lg rounded-2xl p-8 flex-1 text-center transition hover:scale-[1.02]'>
           <h2 className='text-2xl font-bold mb-3 text-gray-900'>New Here?</h2>
           <p className='text-gray-600 mb-6'>Create an account and start submitting tickets.</p>
-          <Button
-            text="Register"
-            bgColor='bg-purple-600'
-            padding="3"
-            hover="hover:bg-purple-700"
-            onClick={() => navigate('/register')}
-            width="full"
-          />
+          <Button className="rounded-md" bgColor="bg-black" width={"w-full"} padding={"p-3"}  text="Register" onClick={()=>navigate('/user/register')}/>
         </div>
 
         {/* Sign In Card */}
         <div className='bg-white bg-opacity-90 backdrop-blur shadow-lg rounded-2xl p-8 flex-1 text-center transition hover:scale-[1.02]'>
           <h2 className='text-2xl font-bold mb-3 text-gray-900'>Already Registered?</h2>
           <p className='text-gray-600 mb-6'>Sign in to view, manage, and track your tickets.</p>
-          <Button
-            text="Sign In"
-            bgColor='bg-purple-600'
-            padding="3"
-            hover="hover:bg-purple-700"
-            onClick={() => navigate('/signin')}
-            width="full"
-          />
+           <Button  bgColor="bg-black" width={"w-full"} padding={"p-3"}  text="Register" onClick={()=>navigate('/user/signin')}/>
         </div>
       </div>
     </div>
