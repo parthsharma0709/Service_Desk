@@ -51,7 +51,7 @@ const ticketSchema=z.object({
     description:z.string().max(200).min(10,"must contain at least 10 characters"),
     category: z.string().max(50).min(5, "category must have at least 5 charchters"),
     priority:prioritySchema,
-    status:statusSchema,
+
 })
 
 const updatedticketSchema=z.object({
@@ -128,7 +128,7 @@ userRouter.post('/auth/createTicket', userAuthentication,async (req,res)=>{
         })
         return ;
     }
-    const {title,description,category,priority,status}=validateTicket.data;
+    const {title,description,category,priority}=validateTicket.data;
     const existingTicket= await ticketModel.findOne({
         description:description,
         title : title});
@@ -144,7 +144,6 @@ userRouter.post('/auth/createTicket', userAuthentication,async (req,res)=>{
         description,
         category,
         priority,
-        status
     })
 
     res.status(200).json({
