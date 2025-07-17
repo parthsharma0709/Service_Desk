@@ -181,6 +181,37 @@ adminRouter.put('/auth/promoteToAdmin/:id/:role',adminAuth,async (req,res)=>{
 
 })
 
+adminRouter.put('/auth/removeAsAdmin/:id',adminAuth,async (req,res)=>{
+    const id= req.params.id;
+    if(!mongoose.Types.ObjectId.isValid(id)){
+        res.json({
+            message:"please enter a valid admin id"
+        })
+        return ;
+    }
+    const removedAdmin= await userModel.findOneAndUpdate( {_id:id},
+        {
+            $set:{
+                role:"user",
+                intendedFor:null
+            }
+        },
+        {new: true}
+    )
+    if(!removedAdmin){
+        res.json({
+            message:"admin not removed"
+        });
+        return;
+    }
+
+    res.status(200).json({
+        message:"admin removed successfully",
+        removedAdmin:removedAdmin
+
+    })
+})
+
 adminRouter.put('/auth/changeTicketStatus/:ticketId/:ticketStatus',adminAuth, async (req,res)=>{
     const { ticketId,ticketStatus}= req.params;
     if(!mongoose.Types.ObjectId.isValid(ticketId)){
