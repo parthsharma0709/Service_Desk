@@ -52,7 +52,7 @@ export const SignIn = () => {
             onChange={(e) => setPassword(e.target.value)}
           />
 
-          <Button className="rounded-md" bgColor="bg-purple-700" width={"w-full"} padding={"p-3"}  text="Register" onClick={signin}/>
+          <Button className="rounded-md" bgColor="bg-purple-700" width={"w-full"} padding={"p-3"}  text="SignIn" onClick={signin}/>
         </div>
 
         <p className='mt-6 text-center text-sm text-gray-600'>
