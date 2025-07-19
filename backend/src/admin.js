@@ -118,6 +118,28 @@ adminRouter.post('/signin',async(req, res)=>{
     });
 })
 
+adminRouter.get('/auth/superAdmin/getAllUsers',adminAuth,async(req,res)=>{
+    const adminId= req.adminId;
+    const validateAdmin= await userModel.findOne({_id:adminId});
+    if(validateAdmin.role==="user"){
+        res.status(404).json({
+            message:"Access Denied!!! "
+        })
+        return ;
+    }
+    const allUsers= await userModel.find();
+    if(!allUsers.length){
+           res.status(404).json({
+            message:"no users founded"
+        })
+        return ;
+    }
+    res.status(200).json({
+        message:"here are your all users",
+        Users:allUsers
+    })
+})
+
 adminRouter.get('/auth/superAdmin/getAllTickets',adminAuth,async(req,res)=>{
     const adminId=req.adminId;
     const isAdmin= await userModel.findOne({_id:adminId});
@@ -140,6 +162,8 @@ adminRouter.get('/auth/superAdmin/getAllTickets',adminAuth,async(req,res)=>{
     })
 
 })
+
+
 
 adminRouter.put('/auth/promoteToAdmin/:id/:role',adminAuth,async (req,res)=>{
            const { id,role}=req.params;
@@ -212,46 +236,48 @@ adminRouter.put('/auth/removeAsAdmin/:id',adminAuth,async (req,res)=>{
     })
 })
 
-adminRouter.put('/auth/changeTicketStatus/:ticketId/:ticketStatus',adminAuth, async (req,res)=>{
-    const { ticketId,ticketStatus}= req.params;
-    if(!mongoose.Types.ObjectId.isValid(ticketId)){
-            res.status(404).json({
-                message:"Invalid I'd format , Please enter a valid Id"
-            })
-            return ;
-           }
+adminRouter.put('/auth/changeTicketStatus/:ticketId', adminAuth, async (req, res) => {
+  const { ticketId } = req.params;
+  const { ticketStatus, ticketPriority } = req.body;
 
-           const allowedStatuses = ['open', 'in progress', 'resolved', 'closed'];
-        if (!allowedStatuses.includes(ticketStatus.toLowerCase())) {
-             res.status(400).json({ message: "Invalid status value" })
-              return;
-               }
+  if (!mongoose.Types.ObjectId.isValid(ticketId)) {
+    return res.status(404).json({
+      message: "Invalid ID format, please enter a valid ID"
+    });
+  }
 
+  // Only validate if ticketStatus is provided
+  const allowedStatuses = ['open', 'in progress', 'resolved', 'closed'];
+  if (ticketStatus && !allowedStatuses.includes(ticketStatus.toLowerCase())) {
+    return res.status(400).json({ message: "Invalid status value" });
+  }
 
-        const updatedTicketStatus= await ticketModel.findOneAndUpdate(
-            {
-                _id:ticketId
-            },
-            {
-                $set:{
-                    status:ticketStatus
-                }
-            },
-            {new : true}
-        )
+  // Build update object dynamically
+  const updateFields = {};
+  if (ticketStatus) updateFields.status = ticketStatus;
+  if (ticketPriority) updateFields.priority = ticketPriority;
 
-        if(!updatedTicketStatus){
-            res.json({
-                message:"ticket status not updated"
-            });
-            return ;
-        }
-        res.status(200).json({
-            message:"ticket status updated successfully",
-            updatedTicketStatus:updatedTicketStatus
-        })
+  // If nothing to update
+  if (Object.keys(updateFields).length === 0) {
+    return res.status(400).json({ message: "Nothing to update" });
+  }
 
-})
+  const updatedTicketStatus = await ticketModel.findOneAndUpdate(
+    { _id: ticketId },
+    { $set: updateFields },
+    { new: true }
+  );
+
+  if (!updatedTicketStatus) {
+    return res.status(500).json({ message: "Ticket update failed" });
+  }
+
+  res.status(200).json({
+    message: "Ticket updated successfully",
+    updatedTicketStatus
+  });
+});
+
 
 adminRouter.put('/auth/addCommentToTicket/:id', adminAuth,async (req,res)=>{
     const id= req.params.id;
@@ -288,7 +314,114 @@ adminRouter.put('/auth/addCommentToTicket/:id', adminAuth,async (req,res)=>{
 
 })
 
+adminRouter.get('/auth/currentAdminInfo',adminAuth,async (req,res)=>{
+    const adminId= req.adminId;
+    const admin= await userModel.findById({_id:adminId});
+    if(!admin){
+        res.status(404).json({
+            message:"admin not found"
+        });
+        return ;
+    }
+    res.status(200).json({
+        message:"here is your details",
+        adminDetails:admin
+    })
+})
 
+adminRouter.delete('/auth/deleteTicket/:id',adminAuth, async(req,res)=>{
+ const id=req.params.id;
+
+     const deletedTicket = await ticketModel.findOneAndDelete({
+     _id: id
+});
+
+if(!deletedTicket){
+    res.json({
+        message:"ticket has already deleted"
+    })
+    return;
+}
+
+      res.json({
+        message:"ticket deleted successfully",
+        deleted:deletedTicket
+      })
+})
+
+adminRouter.get('/auth/getTicket',adminAuth,async (req,res)=>{
+
+ const filter = req.query.filter || '';
+
+    const userticket= await ticketModel.find({
+        title :{'$regex':filter, '$options': 'i'},   
+    });
+
+    if(!userticket.length){
+        res.status(404).json({
+            message:"ticket not found",
+        })
+        return ;
+    }
+    res.status(200).json({
+        message:"here is your ticket",
+        userticket:userticket.map(ticket=>({
+            title:ticket.title,
+            description:ticket.description,
+            category:ticket.category,
+            status:ticket.status,
+            priority:ticket.priority
+        }))
+    })
+})
+
+adminRouter.get('/auth/getUserInfo/:id',adminAuth,async(req,res)=>{
+    const id= req.params.id;
+     const adminId=req.adminId;
+    const isAdmin= await userModel.findOne({_id:adminId});
+    if(isAdmin.role==="user"){
+        res.json({
+            message:"Access Denied!!!!"
+        })
+        return ;
+    }
+    const user=await userModel.findOne({_id:id});
+    if(!user){
+        res.status(404).json({
+            message:"no user found"
+        })
+        return ;
+    }
+     res.json({
+        message:"here is your user",
+        user:user
+     })
+    
+})
+
+adminRouter.get('/auth/getTicketComments/:id', adminAuth, async (req, res) => {
+  const id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({
+      message: "Invalid ID format, please enter a valid ID",
+    });
+  }
+
+  const ticket = await ticketModel.findById(id);
+  if (!ticket) {
+    return res.status(404).json({ message: "Ticket not found" });
+  }
+
+  if (!ticket.comments || ticket.comments.length === 0) {
+    return res.status(200).json({ message: "No comments found", comments: [] });
+  }
+
+  return res.status(200).json({
+    message: "Here are all comments on this ticket",
+    comments: ticket.comments,
+  });
+});
 
 
 module.exports = { AdminRouter: adminRouter };

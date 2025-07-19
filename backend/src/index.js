@@ -6,6 +6,13 @@ const mongoose =require("mongoose");
 app.use(express.json());
 const {UserRouter} =require('./user')
 const {AdminRouter}= require('./admin')
+const cors= require("cors");
+
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:5174'],
+  methods: 'GET,POST,PUT,DELETE',
+  allowedHeaders: 'Content-Type,Authorization'
+}));
 
 mongoose.connect(process.env.MONGODB_URL)
 .then(()=>{console.log("mongodb connected")})

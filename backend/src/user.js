@@ -30,11 +30,12 @@ const signinSchema= z.object({
     password:passwordSchema
 })
 
-const allowedPrioritys = ['low', 'medium', 'high'];
+const allowedPriorities = ['low', 'medium', 'high'];
+
 
 const  prioritySchema = z
   .string()
-  .refine((val) => allowedPrioritys.includes(val.toLowerCase()), {
+  .refine((val) => allowedPriorities.includes(val.toLowerCase()), {
     message: "Must be one of: low, medium, or high",
   });
 
@@ -59,7 +60,7 @@ const updatedticketSchema=z.object({
     description:z.string().max(200).min(10,"must contain at least 10 characters"),
     category: z.string().max(50).min(5, "category must have at least 5 charchters"),
     priority:prioritySchema,
-    status:statusSchema,
+
 })
 
 const hashpassword=async (password)=>{
@@ -147,7 +148,7 @@ userRouter.post('/auth/createTicket', userAuthentication,async (req,res)=>{
     })
 
     res.status(200).json({
-        message: " ticket created successfully",
+        message: "ticket created successfully",
         ticket:validateTicket.data
     })
 })
@@ -199,13 +200,13 @@ userRouter.get('/auth/getTicket',userAuthentication,async (req,res)=>{
     })
 })
 
-userRouter.put('/auth/updateTicket',userAuthentication,async (req,res)=>{
+userRouter.put('/auth/updateTicket/:id',userAuthentication,async (req,res)=>{
      const userId= req.userId;
-     const filter = req.query.filter || '';
+     const id= req.params.id;
      
-      const existingTicket= await ticketModel.find({
+      const existingTicket= await ticketModel.findOne({
         userId:userId,
-        title :{'$regex':filter, '$options': 'i'},   
+       _id: id 
     });
     
     if(!existingTicket){
@@ -224,17 +225,15 @@ userRouter.put('/auth/updateTicket',userAuthentication,async (req,res)=>{
     }
     const updatedTicket=await ticketModel.findOneAndUpdate({
 
-    title: { $regex: filter, $options: 'i' }, 
-    userId: userId 
+          _id:id
   },
         {
              $set :{
-        userId:userId,
         title:newTicketValidate.data.title,
         description :newTicketValidate.data.description,
         category : newTicketValidate.data.category,
         priority : newTicketValidate.data.priority,
-        status:newTicketValidate.data.status
+    
          }
         },
         // be default it returns the data before updation now passing {new : true} it will return the updated decoument 
@@ -302,4 +301,19 @@ userRouter.put('/auth/addCommentToTicket/:id', userAuthentication,async (req,res
            })
 
 })
+userRouter.get('/auth/userInfo',userAuthentication,async (req,res)=>{
+    const userId= req.userId;
+    const user= await userModel.findById({_id:userId});
+    if(!user){
+        res.status(404).json({
+            message:"user not found"
+        });
+        return ;
+    }
+    res.status(200).json({
+        message:"here is your details",
+        userDetails:user
+    })
+})
+
 module.exports = { UserRouter: userRouter }
