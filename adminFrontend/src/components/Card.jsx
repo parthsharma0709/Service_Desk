@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button } from './Button';
-import { MessageCircle } from 'lucide-react';
+import { MessageCircle,X } from 'lucide-react';
 import UpdateTicketComponent from './updateTicket';
 import CommentComponent from './commentComponent';
 
@@ -122,13 +122,8 @@ const Card = ({ ticketId, title, userId, desc, category, status, priority, refre
 
        {showCommentBox && (
   <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
-    <div className="bg-white rounded-xl p-6 w-[90%] max-w-lg relative shadow-lg">
-      <button
-        onClick={() => setShowCommentBox(false)}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-xl"
-      >
-        ×
-      </button>
+    <div className="bg-slate-700 rounded-xl p-6 w-[90%] max-w-lg relative shadow-lg">
+       <X  className="absolute top-2 right-2" onClick={() => setShowCommentBox(false)} />
       <CommentComponent ticketId={ticketId} />
     </div>
   </div>

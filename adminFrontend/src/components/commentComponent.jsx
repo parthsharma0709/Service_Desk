@@ -37,7 +37,7 @@ const CommentComponent = ({ ticketId }) => {
   };
 
   return (
-    <div className="bg-white w-[350px] max-h-[90vh] rounded-xl shadow-lg p-4 overflow-y-auto">
+    <div className="bg-white w-[450px] max-h-[90vh] rounded-xl border-xl shadow-lg p-4 overflow-y-auto">
       {/* Comment input */}
       <div className="flex gap-2 items-end">
         <div className="flex-grow">
