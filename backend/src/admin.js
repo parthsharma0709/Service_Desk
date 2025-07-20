@@ -140,6 +140,31 @@ adminRouter.get('/auth/superAdmin/getAllUsers',adminAuth,async(req,res)=>{
     })
 })
 
+adminRouter.get('/auth/getUser',adminAuth,async(req,res)=>{
+    const filter = req.query.filter || '';
+
+    const user= await userModel.find({
+        name :{'$regex':filter, '$options': 'i'},   
+    });
+    
+     if(!user.length){
+        res.status(404).json({
+            message:"user not found",
+        })
+        return ;
+    }
+    res.status(200).json({
+        message:"here is your ticket",
+        user:user.map(u=>({
+            name:u.name,
+            email:u.email,
+            role:u.role,
+            _id:u._id
+        }))
+    })
+
+})
+
 adminRouter.get('/auth/superAdmin/getAllTickets',adminAuth,async(req,res)=>{
     const adminId=req.adminId;
     const isAdmin= await userModel.findOne({_id:adminId});
@@ -165,76 +190,48 @@ adminRouter.get('/auth/superAdmin/getAllTickets',adminAuth,async(req,res)=>{
 
 
 
-adminRouter.put('/auth/promoteToAdmin/:id/:role',adminAuth,async (req,res)=>{
-           const { id,role}=req.params;
-           if(!mongoose.Types.ObjectId.isValid(id)){
-            res.status(404).json({
-                message:"Invalid I'd format , Please enter a valid Id"
-            })
-            return ;
-           }
-           const newAdmin= await userModel.findOne({_id:id});
-           if(!newAdmin){
-            res.status(404).json({
-                message:"Invalid userId "
-            })
-            return ;
-           }
-
-           const wannaBeAdmin= await userModel.findOneAndUpdate({_id:id}
-            ,{
-                $set :{
-                    role:"admin",
-                  intendedFor:role,
-                }
-            },
-            {new: true}
-           )
-
-           if(!wannaBeAdmin){
-            res.status(404).json({
-                message:"no new admin is created",
-                errors:errors
-            })
-            return ;
-           }
-      res.status(200).json({
-        message:"new admin created successfully",
-        newAdmin:wannaBeAdmin
-      })
-
-})
-
-adminRouter.put('/auth/removeAsAdmin/:id',adminAuth,async (req,res)=>{
+adminRouter.put('/auth/toggleAdmin/:id',adminAuth,async(req,res)=>{
     const id= req.params.id;
-    if(!mongoose.Types.ObjectId.isValid(id)){
+    const adminId= req.adminId;
+     if(!mongoose.Types.ObjectId.isValid(id)){
         res.json({
-            message:"please enter a valid admin id"
+            message:"please enter a valid  id"
         })
         return ;
     }
-    const removedAdmin= await userModel.findOneAndUpdate( {_id:id},
-        {
+
+   let respo;
+    const user= await userModel.findOne({_id:id});
+    if(!user){
+        res.json({message:"user not found"});
+        return ;
+    }
+    if(user.role==="user"){
+        respo= await userModel.findOneAndUpdate({_id:id},{
+          $set:{
+            role:"admin"
+          }
+       }, {new: true})
+    }
+    else{
+         respo= await userModel.findOneAndUpdate({_id:id},{
             $set:{
-                role:"user",
-                intendedFor:null
+                role: "user"
             }
         },
-        {new: true}
-    )
-    if(!removedAdmin){
-        res.json({
-            message:"admin not removed"
-        });
-        return;
+    {new: true})
     }
 
+    if(!respo){
+        res.json({message:"role not toggeled"})
+    }
     res.status(200).json({
-        message:"admin removed successfully",
-        removedAdmin:removedAdmin
-
+        message:"role toggled successfully ",
+        updatedRoleUser:respo
     })
+
 })
+
 
 adminRouter.put('/auth/changeTicketStatus/:ticketId', adminAuth, async (req, res) => {
   const { ticketId } = req.params;
