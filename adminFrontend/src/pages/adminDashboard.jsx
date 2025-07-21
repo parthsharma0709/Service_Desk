@@ -7,6 +7,7 @@ import { Input } from '../components/Input';
 import axios from 'axios';
 import { Search } from 'lucide-react';
 import UserComponent from '../components/UserComponent';
+import { useNavigate } from 'react-router-dom';
 
 const AdminDashBoard = () => {
   const [ticketCreationOpen, setTicketCreationOpen] = useState(false);
@@ -16,7 +17,7 @@ const AdminDashBoard = () => {
   const [titleFilter, setTitleFilter] = useState('');
   const [adminname, setAdminName] = useState('');
   const [onSearch, setOnSearch] = useState(false);
-
+const navigate= useNavigate();
   useEffect(() => {
     async function adminInfo() {
       const token = localStorage.getItem('adminToken');
@@ -72,26 +73,100 @@ const AdminDashBoard = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-gray-200 shadow-lg p-6 flex flex-col sticky top-0 h-screen">
-        <h2 className="text-3xl font-bold text-purple-700 mb-10">🎫 TicketDesk</h2>
-        <nav className="flex flex-col gap-4 text-gray-700">
-          <Button text="📝 Create Ticket" onClick={() => setTicketCreationOpen(true)} bgColor="bg-purple-700" width="full" padding="3" hover="hover:bg-purple-800" />
-          <Button text="📋 All Tickets" onClick={() => setFilteredStatus(null)} bgColor="bg-gray-800" width="full" padding="3" hover="hover:bg-gray-900" />
-          <Button text="✅ Open Tickets" onClick={() => setFilteredStatus('open')} bgColor="bg-green-600" width="full" padding="3" hover="hover:bg-green-700" />
-          <Button text="❌ Closed Tickets" onClick={() => setFilteredStatus('closed')} bgColor="bg-red-600" width="full" padding="3" hover="hover:bg-red-700" />
-          <Button text="🛠 Resolved Tickets" onClick={() => setFilteredStatus('resolved')} bgColor="bg-blue-600" width="full" padding="3" hover="hover:bg-blue-700" />
-          <Button text="🔧 In Progress" onClick={() => setFilteredStatus('in progress')} bgColor="bg-yellow-500" width="full" padding="3" hover="hover:bg-yellow-600" />
-          <Button text="Low Priority" onClick={() => setFilteredStatus('low')} bgColor="bg-yellow-500" width="full" padding="3" hover="hover:bg-yellow-600" />
-          <Button text="Medium Priority" onClick={() => setFilteredStatus('medium')} bgColor="bg-yellow-500" width="full" padding="3" hover="hover:bg-yellow-600" />
-          <Button text="High Priority" onClick={() => setFilteredStatus('high')} bgColor="bg-yellow-500" width="full" padding="3" hover="hover:bg-yellow-600" />
-        </nav>
-      </aside>
+     <aside className="w-64 bg-white border-r border-gray-200 shadow-lg p-6 flex flex-col sticky top-0 h-screen">
+  <h2 className="text-3xl font-bold text-purple-700 mb-10 text-center">Service Desk</h2>
+
+  <nav className="flex flex-col justify-between flex-grow text-gray-700">
+    <div className="flex flex-col gap-3">
+      <Button
+        text="📝 Create Ticket"
+        onClick={() => setTicketCreationOpen(true)}
+        bgColor="bg-purple-700"
+        hover="hover:bg-purple-800"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="📋 All Tickets"
+        onClick={() => setFilteredStatus(null)}
+        bgColor="bg-slate-700"
+        hover="hover:bg-slate-800"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="✅ Open Tickets"
+        onClick={() => setFilteredStatus('open')}
+        bgColor="bg-green-600"
+        hover="hover:bg-green-700"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="❌ Closed Tickets"
+        onClick={() => setFilteredStatus('closed')}
+        bgColor="bg-rose-600"
+        hover="hover:bg-rose-700"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="🛠 Resolved Tickets"
+        onClick={() => setFilteredStatus('resolved')}
+        bgColor="bg-blue-600"
+        hover="hover:bg-blue-700"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="🔧 In Progress"
+        onClick={() => setFilteredStatus('in progress')}
+        bgColor="bg-amber-500"
+        hover="hover:bg-amber-600"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="🟡 Low Priority"
+        onClick={() => setFilteredStatus('low')}
+        bgColor="bg-yellow-400"
+        hover="hover:bg-yellow-500"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="🟠 Medium Priority"
+        onClick={() => setFilteredStatus('medium')}
+        bgColor="bg-orange-400"
+        hover="hover:bg-orange-500"
+        otherStyle={"p-1 w-full"}
+      />
+      <Button
+        text="🔴 High Priority"
+        onClick={() => setFilteredStatus('high')}
+        bgColor="bg-red-500"
+        hover="hover:bg-red-600"
+        otherStyle={"p-1 w-full"}
+      />
+    </div>
+
+    <div className="mt-6">
+      <Button
+        text="Log Out"
+        otherStyle={"p-1 w-full"}
+        onClick={() => {
+          localStorage.removeItem("adminToken");
+          alert("You have logged out. Please sign in to continue.");
+          navigate("/admin/signin");
+        }}
+        bgColor="bg-gray-500"
+        hover="hover:bg-gray-600"
+        width="full"
+        
+      />
+    </div>
+  </nav>
+</aside>
+
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col overflow-y-auto">
         {/* Navbar */}
         <div className="bg-white shadow-md px-6 py-4 flex justify-between items-center border-b border-gray-200">
-          <div className="text-2xl font-bold text-purple-700">TicketDesk Admin</div>
+          <div className="text-2xl font-bold text-purple-700">ServiceDesk Admin</div>
           <div className="flex items-center gap-4">
             <div className="flex items-center border rounded-full px-3 py-1 text-sm shadow-sm bg-gray-100 hover:bg-white transition">
               <span className="mr-2 text-gray-600">Search User</span>

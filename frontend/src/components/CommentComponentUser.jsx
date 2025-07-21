@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Button } from './Button';
 import { Input } from './Input';
 import { useComment } from '../hooks/useComment';
-import SingleComment from './SingleComment'; 
+import SingleComment from './SingleComment'; // make sure it's named correctly
 
-const CommentComponent = ({ ticketId }) => {
+const CommentComponentUser = ({ ticketId }) => {
   const [comment, setComment] = useState("");
-  const  { refreshComments, allUserComments, deleteComment } = useComment({ ticketId });
+  const { refreshComments, allUserComments } = useComment({ ticketId });
 
   useEffect(() => {
     refreshComments();
@@ -27,7 +27,7 @@ const CommentComponent = ({ ticketId }) => {
         }
       );
       setComment("");
-     await  refreshComments();
+      refreshComments();
     } catch (error) {
       console.error(
         "Error while adding comment to ticket",
@@ -67,8 +67,6 @@ const CommentComponent = ({ ticketId }) => {
               text={com.text}
               authorId={com.author}
               date={com.createdAt}
-                onDelete={() => deleteComment(com._id)}
-                commentId= {com._id}
             />
           ))
         ) : (

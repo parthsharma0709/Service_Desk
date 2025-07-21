@@ -111,7 +111,7 @@ const Card = ({ ticketId, title, userId, desc, category, status, priority, refre
         )}
 
         <div className="flex items-center gap-2 mt-4">
-          <h2 className="text-gray-700 font-medium">Answer to user:</h2>
+          <h2 className="text-gray-700 font-medium">Chat with user:</h2>
           <MessageCircle
             color="blue"
             size={28}
