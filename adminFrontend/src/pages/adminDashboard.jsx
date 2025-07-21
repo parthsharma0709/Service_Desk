@@ -216,6 +216,7 @@ const navigate= useNavigate();
                   status={ticket.status}
                   priority={ticket.priority}
                   refresh={refresh}
+                  adminname={adminname}
                 />
               ))}
             </div>

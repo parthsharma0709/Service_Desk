@@ -5,7 +5,7 @@ import { MessageCircle,X } from 'lucide-react';
 import UpdateTicketComponent from './updateTicket';
 import CommentComponent from './commentComponent';
 
-const Card = ({ ticketId, title, userId, desc, category, status, priority, refresh }) => {
+const Card = ({ ticketId, title, userId, desc,adminname, category, status, priority, refresh }) => {
   const [isUpdateTicket, setIsUpdateTicket] = useState(false);
   const [username, setUsername] = useState('');
   const [showCommentBox, setShowCommentBox] = useState(false);
@@ -50,11 +50,16 @@ const Card = ({ ticketId, title, userId, desc, category, status, priority, refre
       console.error('Error while deleting ticket', error.response?.data || error.message);
     }
   };
+  
+
+  console.log("username", username)
+
+  
 
   return (
     <div className="inline-block">
       <div className="bg-white border border-gray-300 rounded-xl shadow-md max-w-[500px] w-full p-4 space-y-4">
-        <div className="flex justify-end text-sm text-gray-600">User: {username}</div>
+        <div className="flex justify-end text-sm text-gray-600">User: {username || adminname}</div>
 
         <h2 className="text-2xl font-semibold text-gray-900">{title}</h2>
 

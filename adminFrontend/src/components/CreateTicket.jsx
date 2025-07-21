@@ -11,10 +11,10 @@ const CreateTicketComponent = ({open,onClose}) => {
   const [priority, setPriority] = useState("");
 
   const submitTicket = async () => {
-    const token = localStorage.getItem("userToken");
+    const token = localStorage.getItem("adminToken");
     try {
       await axios.post(
-        "http://localhost:3000/api/user/auth/createTicket",
+        "http://localhost:3000/api/admin/auth/createTicket",
         {
           title: ticketTitle,
           description: ticketDescription,
