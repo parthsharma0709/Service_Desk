@@ -66,6 +66,10 @@ const Card = ({ ticketId, title, desc, category, status, priority, refresh }) =>
           <UpdateTicketComponent 
             refresh={refresh}
             ticketId={ticketId} 
+            prevTitle={title}
+            prevDesc={desc}
+            prevStatus={status}
+            prevCategory={category}
             open={isUpdateTicket} 
             onClose={() => setIsUpdateTicket(false)} 
           />

@@ -58,7 +58,7 @@ export const SignIn = () => {
         <p className='mt-6 text-center text-sm text-gray-600'>
           Don’t have an account?{' '}
           <span
-            onClick={() => navigate('/register')}
+            onClick={() => navigate('/user/register')}
             className='text-purple-700 hover:underline cursor-pointer font-medium'
           >
             Register

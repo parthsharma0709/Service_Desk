@@ -4,45 +4,62 @@ import { Input } from './Input';
 import { Button } from './Button';
 import axios from 'axios';
 
-const UpdateTicketComponent = ({ticketId, open,onClose,refresh}) => {
+const UpdateTicketComponent = ({
+  ticketId,
+  prevTitle,
+  prevDesc,
+  prevCategory,
+  prevStatus,
+  open,
+  onClose,
+  refresh,
+}) => {
+  const [ticketTitle, setTicketTitle] = useState(prevTitle || '');
+  const [ticketDescription, setTicketDescription] = useState(prevDesc || '');
+  const [category, setCategory] = useState(prevCategory || '');
+  const [priority, setPriority] = useState(prevStatus || '');
 
-     const [ticketTitle, setTicketTitle] = useState("");
-  const [ticketDescription, setTicketDescription] = useState("");
-  const [category, setCategory] = useState("");
-  const [priority, setPriority] = useState("");
+  const submitTicket = async () => {
+    const token = localStorage.getItem('userToken');
 
- const submitTicket = async () => {
-    const token = localStorage.getItem("userToken");
+    const payload = {};
+    if (ticketTitle.trim()) payload.title = ticketTitle.trim();
+    if (ticketDescription.trim()) payload.description = ticketDescription.trim();
+    if (category.trim()) payload.category = category.trim();
+    if (priority) payload.priority = priority;
+
+    if (Object.keys(payload).length === 0) {
+      alert('Please update at least one field before submitting.');
+      return;
+    }
+
     try {
       await axios.put(
         `http://localhost:3000/api/user/auth/updateTicket/${ticketId}`,
-        {
-          title: ticketTitle,
-          description: ticketDescription,
-          category: category,
-          priority: priority,
-        },
+        payload,
         {
           headers: {
             Authorization: token,
           },
         }
       );
-          onClose();
-      alert("ticket created successfully");
+      onClose();
+      alert('Ticket updated successfully');
       refresh();
     } catch (error) {
-      console.error("Error during ticket creation", error.response?.data || error.message);
+      console.error(
+        'Error during ticket update',
+        error.response?.data || error.message
+      );
+      alert('Error while updating ticket. Please try again.');
     }
   };
 
-
-   return (
+  return (
     <div>
       {open && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white w-[500px] max-w-[90%] h-auto rounded-xl shadow-2xl p-6 relative space-y-4">
-            
             {/* Close Button */}
             <button
               className="absolute top-3 right-3 text-gray-500 hover:text-red-500 transition"
@@ -54,21 +71,24 @@ const UpdateTicketComponent = ({ticketId, open,onClose,refresh}) => {
             {/* Form Fields */}
             <div className="space-y-4">
               <Input
-                label={'Title'}
-                placeholder={"can't send email"}
-                type={'text'}
+                label="Title"
+                placeholder="e.g. can't send email"
+                type="text"
+                value={ticketTitle}
                 onChange={(e) => setTicketTitle(e.target.value)}
               />
               <Input
-                label={'Description'}
-                placeholder={"cheater is not working properly because of some technical issue "}
-                type={'text'}
+                label="Description"
+                placeholder="e.g. The server is not working properly."
+                type="text"
+                value={ticketDescription}
                 onChange={(e) => setTicketDescription(e.target.value)}
               />
               <Input
-                label={'Category'}
-                placeholder={"related to electricity department"}
-                type={'text'}
+                label="Category"
+                placeholder="e.g. Electricity issue"
+                type="text"
+                value={category}
                 onChange={(e) => setCategory(e.target.value)}
               />
 
@@ -92,8 +112,8 @@ const UpdateTicketComponent = ({ticketId, open,onClose,refresh}) => {
               <Button
                 className="rounded-md"
                 bgColor="bg-black"
-                width={"w-full"}
-                padding={"p-3"}
+                width="w-full"
+                padding="p-3"
                 text="Update Ticket"
                 onClick={submitTicket}
               />
@@ -103,6 +123,6 @@ const UpdateTicketComponent = ({ticketId, open,onClose,refresh}) => {
       )}
     </div>
   );
-}
+};
 
 export default UpdateTicketComponent;
