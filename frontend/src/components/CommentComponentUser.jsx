@@ -3,22 +3,23 @@ import axios from 'axios';
 import { Button } from './Button';
 import { Input } from './Input';
 import { useComment } from '../hooks/useComment';
-import SingleComment from './SingleComment'; // make sure it's named correctly
+import SingleCommentUser from './SingleCommentUser'; 
 
 const CommentComponentUser = ({ ticketId }) => {
   const [comment, setComment] = useState("");
-  const { refreshComments, allUserComments } = useComment({ ticketId });
+  const { refreshComments, allUserComments, deleteComment } = useComment({ ticketId });
+
 
   useEffect(() => {
     refreshComments();
   }, []);
 
   const addComment = async () => {
-    const token = localStorage.getItem("adminToken");
+    const token = localStorage.getItem("userToken");
 
     try {
       await axios.put(
-        `http://localhost:3000/api/admin/auth/addCommentToTicket/${ticketId}`,
+        `http://localhost:3000/api/user/auth/addCommentToTicket/${ticketId}`,
         { text: comment },
         {
           headers: {
@@ -27,7 +28,7 @@ const CommentComponentUser = ({ ticketId }) => {
         }
       );
       setComment("");
-      refreshComments();
+     await refreshComments();
     } catch (error) {
       console.error(
         "Error while adding comment to ticket",
@@ -62,11 +63,13 @@ const CommentComponentUser = ({ ticketId }) => {
       <div className="mt-4 max-h-[250px] overflow-y-auto border-t pt-2">
         {allUserComments?.length > 0 ? (
           allUserComments.map((com, idx) => (
-            <SingleComment
+            <SingleCommentUser
               key={idx}
               text={com.text}
               authorId={com.author}
               date={com.createdAt}
+              commentId={com._id}
+             onDelete={() => deleteComment(com._id)}
             />
           ))
         ) : (
@@ -77,4 +80,4 @@ const CommentComponentUser = ({ ticketId }) => {
   );
 };
 
-export default CommentComponent;
+export default CommentComponentUser;

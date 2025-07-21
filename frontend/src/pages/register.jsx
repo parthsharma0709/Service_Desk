@@ -20,7 +20,7 @@ export const Registration = () => {
 
       if (response.data.message === 'signed up sucessfully') {
         alert('Registration successful');
-        navigate('/signin');
+        navigate('/user/signin');
       }
     } catch (error) {
       console.error('Error', error.response ? error.response.data : error.message);

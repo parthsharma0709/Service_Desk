@@ -41,7 +41,7 @@ const HomePage = () => {
         <div className='bg-white bg-opacity-90 backdrop-blur shadow-lg rounded-2xl p-8 flex-1 text-center transition hover:scale-[1.02]'>
           <h2 className='text-2xl font-bold mb-3 text-gray-900'>Already Registered?</h2>
           <p className='text-gray-600 mb-6'>Sign in to view, manage, and track your tickets.</p>
-           <Button  bgColor="bg-black" width={"w-full"} padding={"p-3"}  text="Register" onClick={()=>navigate('/user/signin')}/>
+           <Button  bgColor="bg-black" width={"w-full"} padding={"p-3"}  text="SignIn" onClick={()=>navigate('/user/signin')}/>
         </div>
       </div>
     </div>

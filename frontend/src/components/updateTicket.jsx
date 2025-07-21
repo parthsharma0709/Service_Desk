@@ -4,17 +4,18 @@ import { Input } from './Input';
 import { Button } from './Button';
 import axios from 'axios';
 
-const CreateTicketComponent = ({open,onClose}) => {
-  const [ticketTitle, setTicketTitle] = useState("");
+const UpdateTicketComponent = ({ticketId, open,onClose,refresh}) => {
+
+     const [ticketTitle, setTicketTitle] = useState("");
   const [ticketDescription, setTicketDescription] = useState("");
   const [category, setCategory] = useState("");
   const [priority, setPriority] = useState("");
 
-  const submitTicket = async () => {
+ const submitTicket = async () => {
     const token = localStorage.getItem("userToken");
     try {
-      await axios.post(
-        "http://localhost:3000/api/user/auth/createTicket",
+      await axios.put(
+        `http://localhost:3000/api/user/auth/updateTicket/${ticketId}`,
         {
           title: ticketTitle,
           description: ticketDescription,
@@ -29,12 +30,14 @@ const CreateTicketComponent = ({open,onClose}) => {
       );
           onClose();
       alert("ticket created successfully");
+      refresh();
     } catch (error) {
       console.error("Error during ticket creation", error.response?.data || error.message);
     }
   };
 
-  return (
+
+   return (
     <div>
       {open && (
         <div className="fixed top-0 left-0 w-screen h-screen bg-black bg-opacity-50 flex justify-center items-center z-50">
@@ -91,7 +94,7 @@ const CreateTicketComponent = ({open,onClose}) => {
                 bgColor="bg-black"
                 width={"w-full"}
                 padding={"p-3"}
-                text="Create Ticket"
+                text="Update Ticket"
                 onClick={submitTicket}
               />
             </div>
@@ -100,6 +103,6 @@ const CreateTicketComponent = ({open,onClose}) => {
       )}
     </div>
   );
-};
+}
 
-export default CreateTicketComponent;
+export default UpdateTicketComponent;

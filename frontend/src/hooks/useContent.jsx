@@ -14,7 +14,7 @@ export function useContent(){
                 }
             }
         ).then((response)=>{
-            setAllUserTicket(response.data.tickets)
+              setAllUserTicket((response.data.tickets || []).reverse());
         })
     }
 
