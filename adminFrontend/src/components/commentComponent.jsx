@@ -5,7 +5,7 @@ import { Input } from './Input';
 import { useComment } from '../hooks/useComment';
 import SingleComment from './SingleComment'; 
 
-const CommentComponent = ({ ticketId }) => {
+const CommentComponent = ({ ticketId, adminname }) => {
   const [comment, setComment] = useState("");
   const  { refreshComments, allUserComments, deleteComment } = useComment({ ticketId });
 
@@ -69,6 +69,7 @@ const CommentComponent = ({ ticketId }) => {
               date={com.createdAt}
                 onDelete={() => deleteComment(com._id)}
                 commentId= {com._id}
+                adminname={adminname}
             />
           ))
         ) : (

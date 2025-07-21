@@ -129,7 +129,7 @@ const Card = ({ ticketId, title, userId, desc,adminname, category, status, prior
   <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm flex justify-center items-center z-50">
     <div className="bg-slate-700 rounded-xl p-6 w-[90%] max-w-lg relative shadow-lg">
        <X  className="absolute top-2 right-2" onClick={() => setShowCommentBox(false)} />
-      <CommentComponent ticketId={ticketId} />
+      <CommentComponent adminname={adminname} ticketId={ticketId} />
     </div>
   </div>
 )}
