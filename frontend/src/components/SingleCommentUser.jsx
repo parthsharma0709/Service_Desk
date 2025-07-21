@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Button } from './Button';
 
-const SingleCommentUser = ({ text, authorId, onDelete, date }) => {
+const SingleCommentUser = ({ text, authorId, onDelete, date,username }) => {
   const [authorname, setAuthorName] = useState('');
   console.log("authorId",authorId)
 
@@ -25,8 +25,10 @@ const SingleCommentUser = ({ text, authorId, onDelete, date }) => {
     authorInfo();
   }, [authorId]);
 
+  const style= authorname===username ? " bg-slate-300" :"bg-blue-200" ;
+
   return (
-    <div className="p-4 border-b bg-white rounded-md shadow-sm hover:shadow-md transition">
+    <div  className={`p-4 border-b rounded-md shadow-sm ${style} hover:shadow-md transition`}>
       <div className="flex items-center justify-between mb-1">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-semibold">

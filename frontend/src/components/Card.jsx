@@ -5,7 +5,7 @@ import UpdateTicketComponent from './updateTicket';
 import { X, MessageCircle } from 'lucide-react';
 import CommentComponentUser from './CommentComponentUser';
 
-const Card = ({ ticketId, title, desc, category, status, priority, refresh }) => {
+const Card = ({ ticketId, title, desc, username, category, status, priority, refresh }) => {
   const [isUpdateTicket, setIsUpdateTicket] = useState(false);
   const [showCommentBox, setShowCommentBox] = useState(false);
 
@@ -90,7 +90,7 @@ const Card = ({ ticketId, title, desc, category, status, priority, refresh }) =>
           <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex justify-center items-center z-50">
             <div className="bg-white rounded-2xl p-6 w-[90%] max-w-lg relative shadow-xl">
               <X className="absolute top-2 right-2 text-gray-500 hover:text-black cursor-pointer" onClick={() => setShowCommentBox(false)} />
-              <CommentComponentUser ticketId={ticketId} />
+              <CommentComponentUser username={username} ticketId={ticketId} />
             </div>
           </div>
         )}

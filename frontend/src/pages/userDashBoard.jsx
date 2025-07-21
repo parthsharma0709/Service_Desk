@@ -149,6 +149,7 @@ const UserDashboard = () => {
               status={ticket.status}
               priority={ticket.priority}
               refresh={refresh}
+              username={username}
             />
           ))}
         </div>
