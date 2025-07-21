@@ -51,7 +51,6 @@ const ticketSchema=z.object({
     description:z.string().max(200).min(10,"must contain at least 10 characters"),
     category: z.string().max(50).min(5, "category must have at least 5 charchters"),
     priority:prioritySchema,
-    status:statusSchema,
 })
 
 const updatedticketSchema=z.object({
@@ -117,6 +116,44 @@ adminRouter.post('/signin',async(req, res)=>{
         token: token
     });
 })
+
+adminRouter.post('/auth/createTicket', adminAuth,async (req,res)=>{
+    const validateTicket= ticketSchema.safeParse(req.body);
+    const adminId=req.adminId;
+
+    if(!validateTicket.success){
+        res.status(403).json({
+            message:"please enter valid ticket credintials",
+            errors:validateTicket.error.errors
+        })
+        return ;
+    }
+    const {title,description,category,priority}=validateTicket.data;
+    const existingTicket= await ticketModel.findOne({
+        description:description,
+        title : title});
+    if(existingTicket){
+        res.json({
+            message:"same ticket already exist,please create a new ticket"
+        });
+        return ;
+    }
+    await ticketModel.create({
+        userId:adminId,
+        title,
+        description,
+        category,
+        priority,
+    })
+
+    res.status(200).json({
+        message: "ticket created successfully",
+        ticket:validateTicket.data
+    })
+})
+
+
+
 
 adminRouter.get('/auth/superAdmin/getAllUsers',adminAuth,async(req,res)=>{
     const adminId= req.adminId;

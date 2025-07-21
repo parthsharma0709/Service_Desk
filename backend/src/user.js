@@ -56,10 +56,10 @@ const ticketSchema=z.object({
 })
 
 const updatedticketSchema=z.object({
-    title:z.string().max(100).min(5, "title must have at least 5 charchters"),
-    description:z.string().max(200).min(10,"must contain at least 10 characters"),
-    category: z.string().max(50).min(5, "category must have at least 5 charchters"),
-    priority:prioritySchema,
+    title:z.string().max(100).min(5, "title must have at least 5 charchters").optional(),
+    description:z.string().max(200).min(10,"must contain at least 10 characters").optional(),
+    category: z.string().max(50).min(5, "category must have at least 5 charchters").optional(),
+    priority:prioritySchema.optional(),
 
 })
 
@@ -200,51 +200,45 @@ userRouter.get('/auth/getTicket',userAuthentication,async (req,res)=>{
     })
 })
 
-userRouter.put('/auth/updateTicket/:id',userAuthentication,async (req,res)=>{
-     const userId= req.userId;
-     const id= req.params.id;
-     
-      const existingTicket= await ticketModel.findOne({
-        userId:userId,
-       _id: id 
+userRouter.put('/auth/updateTicket/:id', userAuthentication, async (req, res) => {
+  const userId = req.userId;
+  const id = req.params.id;
+
+  const existingTicket = await ticketModel.findOne({ userId, _id: id });
+
+  if (!existingTicket) {
+    return res.status(404).json({ message: "No ticket to update" });
+  }
+
+  const newTicketValidate = updatedticketSchema.safeParse(req.body);
+
+  if (!newTicketValidate.success) {
+    return res.status(400).json({
+      message: "Please enter valid credentials to update your ticket",
+      errors: newTicketValidate.error.errors
     });
-    
-    if(!existingTicket){
-        res.status(404).json({
-            message:"no ticket to update"
-        });
-        return ;
-    }
-    const newTicketValidate= updatedticketSchema.safeParse(req.body);
-    if(!newTicketValidate.success){
-        res.status(400).json({
-            message:"please enter valid credintials to update your ticket",
-            errors:newTicketValidate.error.errors
-        })
-        return ;
-    }
-    const updatedTicket=await ticketModel.findOneAndUpdate({
+  }
 
-          _id:id
-  },
-        {
-             $set :{
-        title:newTicketValidate.data.title,
-        description :newTicketValidate.data.description,
-        category : newTicketValidate.data.category,
-        priority : newTicketValidate.data.priority,
-    
-         }
-        },
-        // be default it returns the data before updation now passing {new : true} it will return the updated decoument 
-         { new: true } 
-    )
-    res.json({
-        message:"ticket updated successfully",
-        updatedTicket:updatedTicket
-    })
+  const updateFields = {};
+  const data = newTicketValidate.data;
 
-})
+  if (data.title !== undefined) updateFields.title = data.title;
+  if (data.description !== undefined) updateFields.description = data.description;
+  if (data.category !== undefined) updateFields.category = data.category;
+  if (data.priority !== undefined) updateFields.priority = data.priority;
+
+  const updatedTicket = await ticketModel.findOneAndUpdate(
+    { _id: id },
+    { $set: updateFields },
+    { new: true }
+  );
+
+  res.json({
+    message: "Ticket updated successfully",
+    updatedTicket
+  });
+});
+
 
 userRouter.delete('/auth/deleteTicket/:id',userAuthentication, async(req,res)=>{
  const id=req.params.id;
