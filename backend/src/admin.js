@@ -396,6 +396,27 @@ adminRouter.get('/auth/getUserInfo/:id',adminAuth,async(req,res)=>{
     
 })
 
+adminRouter.get('/auth/findAuthor/:id', adminAuth,async(req,res)=>{
+    const id = req.params.id;
+     if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({
+      message: "Invalid ID format, please enter a valid ID",
+    });
+  }
+    const author= await userModel.findOne({_id:id});
+   
+  if(!author){
+    res.json({message:"author not found"});
+    return;
+  }
+  res.status(200).json({
+    message:"here is your author",
+    author:author
+  })
+
+})
+
+
 adminRouter.get('/auth/getTicketComments/:id', adminAuth, async (req, res) => {
   const id = req.params.id;
 

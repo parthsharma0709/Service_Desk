@@ -316,4 +316,82 @@ userRouter.get('/auth/userInfo',userAuthentication,async (req,res)=>{
     })
 })
 
+
+userRouter.get('/auth/getTicketComments/:id', userAuthentication, async (req, res) => {
+  const id = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({
+      message: "Invalid ID format, please enter a valid ID",
+    });
+  }
+
+  const ticket = await ticketModel.findById(id);
+  if (!ticket) {
+    return res.status(404).json({ message: "Ticket not found" });
+  }
+
+  if (!ticket.comments || ticket.comments.length === 0) {
+    return res.status(200).json({ message: "No comments found", comments: [] });
+  }
+
+  return res.status(200).json({
+    message: "Here are all comments on this ticket",
+    comments: ticket.comments,
+  });
+});
+
+userRouter.get('/auth/findAuthor/:id', userAuthentication,async(req,res)=>{
+    const id = req.params.id;
+     if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({
+      message: "Invalid ID format, please enter a valid ID",
+    });
+  }
+    const author= await userModel.findOne({_id:id});
+   
+  if(!author){
+    res.json({message:"author not found"});
+    return;
+  }
+  
+  res.status(200).json({
+    message:"here is your author",
+    author:author
+  })
+
+})
+
+
+userRouter.delete('/auth/deleteComment/:id', userAuthentication, async (req, res) => {
+  const commentId = req.params.id;
+
+  if (!mongoose.Types.ObjectId.isValid(commentId)) {
+    return res.status(404).json({ message: "Invalid comment ID format" });
+  }
+
+  try {
+    const updatedTicket = await ticketModel.findOneAndUpdate(
+      { "comments._id": commentId }, // find the ticket that contains the comment
+      { $pull: { comments: { _id: commentId } } }, // remove the comment
+      { new: true } // return the updated ticket
+    );
+
+    if (!updatedTicket) {
+      return res.status(404).json({ message: "Comment not found or already deleted" });
+    }
+
+    res.status(200).json({
+      message: "Comment deleted successfully",
+      updatedTicket,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error while deleting comment",
+      error: error.message,
+    });
+  }
+});
+
+
 module.exports = { UserRouter: userRouter }
