@@ -2,8 +2,9 @@ import axios from 'axios';
 import { useEffect } from 'react';
 import { useState } from 'react'
 
-export function useContent(){
+export function useContent(userId=null){
     const [allUserTickets,setAllUserTicket]=useState([]);
+    const [userTickets,setUserTickets]=useState([]);
          
     const refresh= async()=>{
         const token= localStorage.getItem("adminToken");
@@ -18,6 +19,21 @@ export function useContent(){
         })
     }
 
+  const refreshUserTickets = async (userId) => {
+    const token = localStorage.getItem("adminToken");
+    try {
+        const response = await axios.get(`http://localhost:3000/api/admin/auth/viewTickets/ofaUser/${userId}`, {
+            headers: {
+                Authorization: token
+            }
+        });
+        setUserTickets((response.data.userTickets || []).reverse());
+    } catch (error) {
+        console.error("Failed to fetch user tickets", error);
+    }
+};
+
+
     useEffect(()=>{
         refresh();
         let interval= setInterval(()=>{
@@ -29,6 +45,13 @@ export function useContent(){
         }
     },[]);
 
-   return {refresh,allUserTickets}
+      useEffect(() => {
+    if (!userId) return;
+    refreshUserTickets(userId);
+    const interval = setInterval(() => refreshUserTickets(userId), 10 * 1000);
+    return () => clearInterval(interval);
+  }, [userId]);
+
+   return {refresh,allUserTickets, refreshUserTickets,userTickets}
 }
 

@@ -2,12 +2,14 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Input } from './Input';
 import { X } from 'lucide-react';
+import { Button } from '../../../frontend/src/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 const UserComponent = ({ onClose }) => {
   const [allUsers, setAllUsers] = useState([]);
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(false);
-  
+  const navigate = useNavigate();
 
   const [adminId,setAdminId]=useState("");
 
@@ -117,12 +119,21 @@ const UserComponent = ({ onClose }) => {
                   <p><strong>Email:</strong> {user.email}</p>
                   <p><strong>Role:</strong> {user.role}</p>
                 </div>
-                <button
+                <Button
                   onClick={() => toggleAdmin(user._id)}
-                  className="px-3 py-1 text-xs rounded-md border bg-purple-100 hover:bg-purple-200"
-                >
-                  {user.role === "admin" ? "Remove Admin" : "Make Admin"}
-                </button>
+                  otherStyle={"p-2 text-xs rounded-md border  hover:bg-purple-600"}
+                  bgColor='bg-black'
+                  text={`${user.role === "admin" ? "Remove Admin" : "Make Admin"}`}
+                />
+                  
+                
+             <Button
+  text={"View all tickets"}
+  otherStyle={"p-2 hover:bg-black rounded"}
+  
+  onClick={() => navigate(`/admin/user-tickets/${user._id}/${user.name}`)}
+/>
+
               </div>
             ))
           ) : (

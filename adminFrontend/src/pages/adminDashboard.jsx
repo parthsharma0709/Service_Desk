@@ -43,29 +43,32 @@ const navigate= useNavigate();
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    async function getFilteredTickets() {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/admin/auth/getTicket?filter=${titleFilter}`,
-          {
-            headers: {
-              Authorization: token,
-            },
-          }
-        );
-        setFilterTicket(response.data.userticket);
-      } catch (err) {
-        console.error('Ticket fetch error', err.response?.data || err.message);
-        setFilterTicket([]);
-      }
+  const token = localStorage.getItem('adminToken');
+  async function getFilteredTickets() {
+    try {
+      const response = await axios.get(
+        `http://localhost:3000/api/admin/auth/getTicket?filter=${titleFilter}`,
+        {
+          headers: {
+            Authorization: token,
+          },
+        }
+      );
+      // ✅ this now works because backend sends `userticket` consistently
+      setFilterTicket(response.data.userticket);
+    } catch (err) {
+      console.error('Ticket fetch error', err.response?.data || err.message);
+      setFilterTicket([]); // fallback to prevent map error
     }
-    if (titleFilter.trim() !== '') {
-      getFilteredTickets();
-    } else {
-      setFilterTicket(null);
-    }
-  }, [titleFilter]);
+  }
+
+  if (titleFilter.trim() !== '') {
+    getFilteredTickets();
+  } else {
+    setFilterTicket(null);
+  }
+}, [titleFilter]);
+
 
   useEffect(() => {
     refresh();
@@ -224,6 +227,7 @@ const navigate= useNavigate();
                   priority={ticket.priority}
                   refresh={refresh}
                   adminname={adminname}
+                  showuserInfo={true}
                 />
               ))}
             </div>
