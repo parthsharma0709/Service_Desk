@@ -227,7 +227,24 @@ adminRouter.get('/auth/superAdmin/getAllTickets',adminAuth,async(req,res)=>{
 
 })
 
+adminRouter.get('/auth/viewTickets/ofaUser/:id',adminAuth,async(req,res)=>{
+  const id = req.params.id;
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+  res.status(400).json({ message: "Please enter a valid ID" });
+    return ;
+  }
+  const userTickets= await ticketModel.find({userId:id})
 
+   if(!userTickets.length){
+    res.json({message:"no ticket found for this user"})
+    return ;
+   }
+   res.json({
+    message:"here are the tickets of this user",
+    userTickets:userTickets
+   })
+  
+})
 
 adminRouter.put('/auth/toggleAdmin/:id', adminAuth, async (req, res) => {
   const id = req.params.id;
@@ -385,30 +402,65 @@ if(!deletedTicket){
       })
 })
 
-adminRouter.get('/auth/getTicket',adminAuth,async (req,res)=>{
+adminRouter.get('/auth/getTicket', adminAuth, async (req, res) => {
+  const filter = req.query.filter || '';
 
- const filter = req.query.filter || '';
-
-    const userticket= await ticketModel.find({
-        title :{'$regex':filter, '$options': 'i'},   
+  try {
+    const userticket = await ticketModel.find({
+      title: { $regex: filter, $options: 'i' }
     });
 
-    if(!userticket.length){
-        res.status(404).json({
-            message:"ticket not found",
-        })
-        return ;
-    }
-    res.status(200).json({
-        message:"here is your ticket",
-        userticket:userticket.map(ticket=>({
-            title:ticket.title,
-            description:ticket.description,
-            category:ticket.category,
-            status:ticket.status,
-            priority:ticket.priority
-        }))
-    })
+    return res.status(200).json({
+      message: userticket.length ? "Here are your tickets" : "No tickets found",
+      userticket: userticket.map(ticket => ({
+        title: ticket.title,
+        description: ticket.description,
+        category: ticket.category,
+        status: ticket.status,
+        priority: ticket.priority,
+        userId: ticket.userId
+      }))
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error",
+      error: error.message
+    });
+  }
+});
+
+
+adminRouter.get('/auth/auserTicket/:id',adminAuth,async(req,res)=>{
+  const id=req.params.id;
+  const filter= req.query.filter || ' ';
+   if(!mongoose.Types.ObjectId.isValid(id)){
+            res.status(404).json({
+                message:"Invalid I'd format , Please enter a valid Id"
+            })
+            return ;
+           }
+           const userFilteredTicket= await ticketModel.find({
+            userId:id,
+              title: { $regex: filter, $options: 'i' },
+           })
+           if(!userFilteredTicket.length){
+            res.json({message:"no ticket founds"})
+            return ;
+           }
+
+            res.status(200).json({
+      message: "Here are your tickets",
+      userFilteredTicket: userFilteredTicket.map(ticket => ({
+        _id: ticket._id,
+        userId: ticket.userId,
+        title: ticket.title,
+        description: ticket.description,
+        category: ticket.category,
+        status: ticket.status,
+        priority: ticket.priority,
+      })),
+    });
+
 })
 
 adminRouter.get('/auth/getUserInfo/:id',adminAuth,async(req,res)=>{
