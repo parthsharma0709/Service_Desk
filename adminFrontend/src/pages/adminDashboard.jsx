@@ -22,15 +22,22 @@ const navigate= useNavigate();
     async function adminInfo() {
       const token = localStorage.getItem('adminToken');
       try {
-        const response = await axios.get('http://localhost:3000/api/admin/auth/currentAdminInfo', {
-          headers: {
-            Authorization: token,
-          },
-        });
-        setAdminName(response.data.adminDetails.name);
-      } catch (err) {
-        console.error('Failed to fetch admin info', err.response?.data || err.message);
-      }
+  const response = await axios.get('http://localhost:3000/api/admin/auth/currentAdminInfo', {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  const name = response?.data?.adminDetails?.name;
+  if (name) {
+    setAdminName(name);
+  } else {
+    console.warn("Name not found in response:", response.data);
+  }
+} catch (err) {
+  console.error('Failed to fetch admin info', err.response?.data || err.message);
+}
+
     }
     adminInfo();
   }, []);
@@ -71,7 +78,7 @@ const navigate= useNavigate();
   const finalTickets = filterTicket !== null ? filterTicket : filteredTickets || [];
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-slate-300 flex">
       {/* Sidebar */}
      <aside className="w-64 bg-white border-r border-gray-200 shadow-lg p-6 flex flex-col sticky top-0 h-screen">
   <h2 className="text-3xl font-bold text-purple-700 mb-10 text-center">Service Desk</h2>

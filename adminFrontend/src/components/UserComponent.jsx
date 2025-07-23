@@ -54,28 +54,35 @@ const UserComponent = ({ onClose }) => {
   }, [filter]);
 
   const toggleAdmin = async (id) => {
-    const token = localStorage.getItem("adminToken");
-    if(adminId===id){
-      alert("you have removed yourself as admin , please sign as a user to continue");
-        localStorage.removeItem("adminToken");
-    window.location.href = "http://localhost:5174/user/signin";
-    return ;
-    }
-  else{
-      try {
-      await axios.put(
-        `http://localhost:3000/api/admin/auth/toggleAdmin/${id}`,
-        {},
-        { headers: { Authorization: token } }
-      );
-      setAllUsers((prev) =>
-        prev.map((u) => u._id === id ? { ...u, role: u.role === 'admin' ? 'user' : 'admin' } : u)
-      );
-    } catch (error) {
-      console.error("Error toggling admin role", error.response?.data || error.message);
-    }
+  const token = localStorage.getItem("adminToken");
+
+  if (!adminId) {
+    alert("Still loading admin data. Please try again.");
+    return;
   }
-  };
+
+  if (adminId === id) {
+    alert("You can't  yourself as admin...");
+    return;
+  }
+
+  try {
+    await axios.put(
+      `http://localhost:3000/api/admin/auth/toggleAdmin/${id}`,
+      {},
+      { headers: { Authorization: token } }
+    );
+    setAllUsers((prev) =>
+      prev.map((u) =>
+        u._id === id ? { ...u, role: u.role === "admin" ? "user" : "admin" } : u
+      )
+    );
+  } catch (error) {
+    alert(error.response?.data?.message || "Toggle failed");
+    console.error("Error toggling admin role", error.response?.data || error.message);
+  }
+};
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm bg-black/30">

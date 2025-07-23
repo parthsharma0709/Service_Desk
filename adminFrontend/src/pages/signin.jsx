@@ -17,6 +17,11 @@ export const SignIn = () => {
         password,
       });
 
+      if(response.data.admin.role==="user"){
+        alert("Sorry , as a user you don't have access to admin pannel")
+        return ;
+      }
+
       if (response.data.message === 'signed in successfully') {
         const adminToken = response.data.token;
         localStorage.setItem('adminToken', adminToken);

@@ -51,11 +51,6 @@ const Card = ({ ticketId, title, userId, desc,adminname, category, status, prior
     }
   };
   
-
-  console.log("username", username)
-
-  
-
   return (
     <div className="inline-block">
       <div className="bg-white border border-gray-300 rounded-xl shadow-md max-w-[500px] w-full p-4 space-y-4">
