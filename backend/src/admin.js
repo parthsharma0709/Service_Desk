@@ -108,12 +108,14 @@ adminRouter.post('/signin',async(req, res)=>{
         })
         return ;
       }
+       
 
     const token=jwt.sign({adminId:admin._id},process.env.JWT_SECRET);
     
     res.status(200).json({
         message:"signed in successfully",
-        token: token
+        token: token,
+        admin:admin
     });
 })
 
@@ -227,47 +229,47 @@ adminRouter.get('/auth/superAdmin/getAllTickets',adminAuth,async(req,res)=>{
 
 
 
-adminRouter.put('/auth/toggleAdmin/:id',adminAuth,async(req,res)=>{
-    const id= req.params.id;
-    const adminId= req.adminId;
-     if(!mongoose.Types.ObjectId.isValid(id)){
-        res.json({
-            message:"please enter a valid  id"
-        })
-        return ;
-    }
+adminRouter.put('/auth/toggleAdmin/:id', adminAuth, async (req, res) => {
+  const id = req.params.id;
+  const adminId = req.adminId;
 
-   let respo;
-    const user= await userModel.findOne({_id:id});
-    if(!user){
-        res.json({message:"user not found"});
-        return ;
-    }
-    if(user.role==="user"){
-        respo= await userModel.findOneAndUpdate({_id:id},{
-          $set:{
-            role:"admin"
-          }
-       }, {new: true})
-    }
-    else{
-         respo= await userModel.findOneAndUpdate({_id:id},{
-            $set:{
-                role: "user"
-            }
-        },
-    {new: true})
-    }
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+  res.status(400).json({ message: "Please enter a valid ID" });
+    return ;
+  }
 
-    if(!respo){
-        res.json({message:"role not toggeled"})
-    }
-    res.status(200).json({
-        message:"role toggled successfully ",
-        updatedRoleUser:respo
-    })
+  if (id.toString() === adminId.toString()) {
+    res.status(403).json({
+      message: "You cannot remove yourself as an admin",
+    });
+     return ;
+  }
 
-})
+  const user = await userModel.findById(id);
+  if (!user) {
+    res.status(404).json({ message: "User not found" });
+     return ;
+  }
+
+  const updatedRole = user.role === "admin" ? "user" : "admin";
+
+  const respo = await userModel.findByIdAndUpdate(
+    id,
+    { role: updatedRole },
+    { new: true }
+  );
+
+  if (!respo) {
+     res.status(500).json({ message: "Role not toggled" });
+     return ;
+  }
+
+   res.status(200).json({
+    message: "Role toggled successfully",
+    updatedRoleUser: respo,
+  });
+});
+
 
 
 adminRouter.put('/auth/changeTicketStatus/:ticketId', adminAuth, async (req, res) => {
