@@ -65,11 +65,11 @@ const UserDashboard = () => {
   const finalTickets = filterTicket !== null ? filterTicket : filteredTickets || [];
 
   return (
-    <div className="min-h-screen flex bg-gray-50">
+    <div className="min-h-screen flex  bg-slate-300">
       
       {/* Sidebar */}
       <aside className="w-64 bg-white border-r border-gray-200 shadow-lg p-6 flex flex-col sticky top-0 h-screen">
-        <h2 className="text-3xl font-bold text-purple-700 mb-10 text-center">🎫Servic Desk</h2>
+       <div className="text-2xl font-bold mb-3 pl-4 text-purple-700"> Service Desk</div>
         <nav className="flex flex-col justify-between flex-grow text-gray-700">
           <div className="flex flex-col gap-3">
             <Button otherStyle={"p-1 w-full"} text="📝 Create Ticket" onClick={() => setTicketCreationOpen(true)} bgColor="bg-purple-700" hover="hover:bg-purple-800" width="full" padding="3" />
@@ -78,9 +78,9 @@ const UserDashboard = () => {
             <Button otherStyle={"p-1 w-full"} text="❌ Closed Tickets" onClick={() => setFilteredStatus('closed')} bgColor="bg-rose-600" hover="hover:bg-rose-700" width="full" padding="3" />
             <Button otherStyle={"p-1 w-full"} text="🛠 Resolved Tickets" onClick={() => setFilteredStatus('resolved')} bgColor="bg-blue-600" hover="hover:bg-blue-700" width="full" padding="3" />
             <Button otherStyle={"p-1 w-full"} text="🔧 In Progress" onClick={() => setFilteredStatus('in progress')} bgColor="bg-amber-500" hover="hover:bg-amber-600" width="full" padding="3" />
-            <Button otherStyle={"p-1 w-full"} text="🟡 Low Priority" onClick={() => setFilteredStatus('low')} bgColor="bg-yellow-400" hover="hover:bg-yellow-500" width="full" padding="3" />
-            <Button otherStyle={"p-1 w-full"} text="🟠 Medium Priority" onClick={() => setFilteredStatus('medium')} bgColor="bg-orange-400" hover="hover:bg-orange-500" width="full" padding="3" />
-            <Button otherStyle={"p-1 w-full"} text="🔴 High Priority" onClick={() => setFilteredStatus('high')} bgColor="bg-red-500" hover="hover:bg-red-600" width="full" padding="3" />
+            <Button otherStyle={"p-1 w-full"} text="🟡 Low Priority" onClick={() => setFilteredStatus('low')} bgColor="bg-purple-400" hover="hover:bg-purple-700" width="full" padding="3" />
+            <Button otherStyle={"p-1 w-full"} text="🟠 Medium Priority" onClick={() => setFilteredStatus('medium')} bgColor="bg-black" hover="hover:bg-orange-500" width="full" padding="3" />
+            <Button otherStyle={"p-1 w-full"} text="🔴 High Priority" onClick={() => setFilteredStatus('high')} bgColor="bg-red-400" hover="hover:bg-red-600" width="full" padding="3" />
           </div>
           <div className="mt-6">
             <Button
