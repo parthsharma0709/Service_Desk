@@ -54,7 +54,7 @@ const Card = ({ ticketId, title, userId, desc,adminname,showuserInfo, category, 
   return (
     <div className="inline-block">
       <div className="bg-white border border-gray-300 rounded-xl shadow-md max-w-[500px] w-full p-4 space-y-4">
-       { showuserInfo &&  <div className="flex justify-end text-sm text-gray-600">User: {username || adminname}</div>}
+       { showuserInfo &&  <div className="flex justify-end text-sm text-gray-600">Created By: {username || adminname}</div>}
 
         <h2 className="text-2xl font-semibold text-gray-900">{title}</h2>
 

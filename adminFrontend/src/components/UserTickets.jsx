@@ -12,6 +12,34 @@ const UserTickets = () => {
  const [filteredStatus, setFilteredStatus] = useState(null);
   const [filterTicket, setFilterTicket] = useState([]);
   const [titleFilter, setTitleFilter] = useState('');
+  const [adminName,setAdminName]=useState("");
+
+
+    useEffect(() => {
+    async function adminInfo() {
+      const token = localStorage.getItem('adminToken');
+      try {
+  const response = await axios.get('http://localhost:3000/api/admin/auth/currentAdminInfo', {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  const name = response?.data?.adminDetails?.name;
+  if (name) {
+    setAdminName(name);
+  } else {
+    console.warn("Name not found in response:", response.data);
+  }
+} catch (err) {
+  console.error('Failed to fetch admin info', err.response?.data || err.message);
+}
+
+    }
+    adminInfo();
+  }, []);
+
+
  useEffect(() => {
   const token = localStorage.getItem("adminToken");
 
@@ -44,7 +72,7 @@ const UserTickets = () => {
   const filteredTickets = (filterTicket || userTickets).filter(ticket =>
     filteredStatus ? ticket.status === filteredStatus || ticket.priority === filteredStatus : true
   );
-
+console.log("adminName",adminName)
   return (
     <div className="min-h-screen flex bg-slate-200">
       {/* Sidebar */}
@@ -63,7 +91,7 @@ const UserTickets = () => {
       {/* Main Content */}
         <div className="flex flex-col mt-3">
         <div className="px-8 pt-6 pb-2 text-3xl text-center font-semibold text-gray-800">
-         Hey ,  Here are the all tickets of <span className="text-green-700"> {name.trim().split(' ')[0]}.</span>
+         Hey <span className="text-purple-800">{adminName.trim().split(' ')[0]}</span> ,  Here are the all tickets of <span className="text-green-700"> {name.trim().split(' ')[0]}.</span>
         </div>
       <main className="flex-1 p-6">
         <div className="mb-4 max-w-md">
@@ -88,6 +116,8 @@ const UserTickets = () => {
                   category={ticket.category}
                   status={ticket.status}
                   priority={ticket.priority}
+                  adminname={adminName}
+                
                 />
               ))}
             </div>
