@@ -9,9 +9,10 @@ const {AdminRouter}= require('./admin')
 const cors= require("cors");
 
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:5174'],
-  methods: 'GET,POST,PUT,DELETE',
-  allowedHeaders: 'Content-Type,Authorization'
+  origin: ["http://localhost:5173", "http://localhost:5174"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true   // if you plan to send cookies/JWT
 }));
 
 mongoose.connect(process.env.MONGODB_URL)

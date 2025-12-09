@@ -211,6 +211,7 @@ userRouter.put('/auth/updateTicket/:id', userAuthentication, async (req, res) =>
   }
 
   const newTicketValidate = updatedticketSchema.safeParse(req.body);
+  console.log(newTicketValidate)
 
   if (!newTicketValidate.success) {
     return res.status(400).json({
@@ -228,7 +229,7 @@ userRouter.put('/auth/updateTicket/:id', userAuthentication, async (req, res) =>
   if (data.priority !== undefined) updateFields.priority = data.priority;
 
   const updatedTicket = await ticketModel.findOneAndUpdate(
-    { _id: id },
+    { userId, _id: id },
     { $set: updateFields },
     { new: true }
   );
